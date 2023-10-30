@@ -9,7 +9,7 @@ import { ListItemContent } from "@mui/joy";
 import { MouseEventHandler } from "react";
 
 type CreateItemProps = {
-  id: number;
+  key: number;
   onEdit: (id: number) => void;
   onTrash: (id: number) => void;
   category: string;
@@ -18,10 +18,10 @@ type CreateItemProps = {
 
 function CreateItem(props: CreateItemProps) {
   const onEdit = () => {
-    props.onEdit(props.id);
+    props.onEdit(props.key);
   };
   const onTrash = () => {
-    props.onTrash(props.id);
+    props.onTrash(props.key);
   };
 
   return (
@@ -29,8 +29,9 @@ function CreateItem(props: CreateItemProps) {
       <ListItem>
         <ListItemButton onClick={onEdit}>
           <ListItemDecorator>{props.category}</ListItemDecorator>
-          <ListItemContent>{props.name}</ListItemContent> / -
-          <ListItemContent>{props.name}</ListItemContent> / -
+          <ListItemContent>{props.name}</ListItemContent>
+          <ListItemContent>EDIT</ListItemContent>
+          <ListItemContent>TRASH</ListItemContent>
         </ListItemButton>
       </ListItem>
     </div>

@@ -6,18 +6,14 @@ import Packing from "./pages/Packing";
 import { Routes, Route } from "react-router-dom";
 import DataBase from "./utils/db";
 
-function App() {
-  let db = null;
-  console.log("APP1:", db);
-  db = DataBase.getInstance();
-  console.log("APP2:", db);
+function App(props: { db: DataBase }) {
   return (
     <div className="App">
       <Routes>
-        <Route path="/" element={<Main database={db} />} />
-        <Route path="create" element={<Create database={db} />} />
-        <Route path="packing" element={<Packing database={db} />} />
-        <Route path="trash" element={<Trash database={db} />} />
+        <Route path="/" element={<Main database={props.db} />} />
+        <Route path="create" element={<Create database={props.db} />} />
+        <Route path="packing" element={<Packing database={props.db} />} />
+        <Route path="trash" element={<Trash database={props.db} />} />
       </Routes>
     </div>
   );
