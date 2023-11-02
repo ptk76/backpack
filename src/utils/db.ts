@@ -13,174 +13,208 @@ class DataBase {
   static readonly TRIPS_TABLE = "trips";
   static readonly TRIPS_AND_ITEMS_TABLE = "trips_and_items";
 
-  private db: any;
+  private db?: IDBDatabase;
 
-  private async init() {
-    return new Promise<boolean>((resolve) => {
-      const openOrCreateDB = window.indexedDB.open(
-        DataBase.DATABASE_NAME,
-        DataBase.DATABASE_VER
+  constructor() {
+    const dbOpenRequest = window.indexedDB.open(
+      DataBase.DATABASE_NAME,
+      DataBase.DATABASE_VER
+    );
+    dbOpenRequest.onerror = (event) => {
+      console.error("Error opening DB", event);
+    };
+    dbOpenRequest.onsuccess = async (event) => {
+      this.db = dbOpenRequest.result;
+      if ((await this.countTable(DataBase.CATEGORIES_TABLE)) === 0)
+        this.initDefaults();
+    };
+    dbOpenRequest.onupgradeneeded = (event) => {
+      this.createTables(event);
+    };
+  }
+
+  private createTables(event: IDBVersionChangeEvent) {
+    console.log(event);
+    const db = (event.target as IDBOpenDBRequest).result;
+    console.log(`Upgrading to version ${db.version}`);
+
+    db.onerror = (event) => {
+      console.error("Error initializing database", event);
+    };
+
+    const tripsTable = db.createObjectStore(DataBase.TRIPS_TABLE, {
+      keyPath: "id",
+      autoIncrement: true,
+    });
+    tripsTable.createIndex("name", "name", { unique: false });
+
+    const categoriesTable = db.createObjectStore(DataBase.CATEGORIES_TABLE, {
+      keyPath: "key",
+      autoIncrement: true,
+    });
+    categoriesTable.createIndex("name", "name", { unique: true });
+
+    const tripsAndItemsTable = db.createObjectStore(
+      DataBase.TRIPS_AND_ITEMS_TABLE,
+      {
+        keyPath: "",
+        autoIncrement: false,
+      }
+    );
+    tripsAndItemsTable.createIndex("trip_id", "trip_id", { unique: false });
+    tripsAndItemsTable.createIndex("item_id", "item_id", { unique: false });
+    tripsAndItemsTable.createIndex("active", "active", { unique: false });
+
+    const itemsTable = db.createObjectStore(DataBase.ITEMS_TABLE, {
+      keyPath: "id",
+      autoIncrement: true,
+    });
+    itemsTable.createIndex("category_id", "category_id", { unique: false });
+    itemsTable.createIndex("name", "name", { unique: true });
+  }
+
+  private async countTable(name: string) {
+    return new Promise<number>((resolve) => {
+      if (!this.db) {
+        resolve(-1);
+        return;
+      }
+      const transaction = this.db.transaction([name], "readonly");
+      const store = transaction.objectStore(name);
+      const count = store.count();
+      count.onsuccess = () => resolve(count.result);
+    });
+  }
+
+  private async initDefaultCategories() {
+    return new Promise(async (resolve) => {
+      if (!this.db) {
+        resolve(false);
+        return;
+      }
+      const transaction = this.db.transaction(
+        [DataBase.ITEMS_TABLE, DataBase.CATEGORIES_TABLE],
+        "readwrite"
+      );
+      const storeCategories = transaction.objectStore(
+        DataBase.CATEGORIES_TABLE
       );
 
-      openOrCreateDB.addEventListener("error", () => {
-        console.error("Error opening DB");
-        resolve(false);
+      const uniqueCategories = new Set<string>();
+      initialPackingItems.forEach((element) => {
+        uniqueCategories.add(element.category);
       });
 
-      openOrCreateDB.addEventListener("success", () => {
-        this.db = openOrCreateDB.result;
-        resolve(true);
-      });
+      uniqueCategories.forEach((category) => {
+        const query = storeCategories.add({
+          name: category,
+        });
 
-      openOrCreateDB.addEventListener("upgradeneeded", async (init) => {
-        this.db = (init.target as IDBOpenDBRequest).result;
-        this.db.onerror = () => {
-          console.error("Error loading database.");
+        query.onerror = (event) => {
+          event.stopPropagation();
+          console.error("initDefaultCategories: Query error", event);
         };
-
-        const tripsTable = this.db.createObjectStore(DataBase.TRIPS_TABLE, {
-          keyPath: "id",
-          autoIncrement: true,
-        });
-        tripsTable.createIndex("name", "name", { unique: false });
-
-        const categoriesTable = this.db.createObjectStore(
-          DataBase.CATEGORIES_TABLE,
-          {
-            keyPath: "id",
-            autoIncrement: true,
-          }
-        );
-        categoriesTable.createIndex("name", "name", { unique: true });
-
-        const tripsAndItemsTable = this.db.createObjectStore(
-          DataBase.TRIPS_AND_ITEMS_TABLE,
-          {
-            keyPath: "",
-            autoIncrement: false,
-          }
-        );
-        tripsAndItemsTable.createIndex("trip_id", "trip_id", { unique: false });
-        tripsAndItemsTable.createIndex("item_id", "item_id", { unique: false });
-        tripsAndItemsTable.createIndex("active", "active", { unique: false });
-
-        const itemsTable = this.db.createObjectStore(DataBase.ITEMS_TABLE, {
-          keyPath: "id",
-          autoIncrement: true,
-        });
-        itemsTable.createIndex("category_id", "category_id", { unique: false });
-        itemsTable.createIndex("name", "name", { unique: true });
-        var txn = (init.target as IDBOpenDBRequest).transaction;
-        await this.initItemTable(txn);
-
+      });
+      transaction.oncomplete = () => {
         resolve(true);
-      });
-    });
-  }
-
-  private async initCategory(transaction: IDBTransaction | null, name: string) {
-    if (transaction === null) return;
-    return new Promise((resolve) => {
-      const objectStore = transaction.objectStore(DataBase.CATEGORIES_TABLE);
-      objectStore.openCursor().addEventListener("success", (e: Event) => {
-        const pointer = (e.target as IDBRequest).result as IDBCursorWithValue;
-        if (pointer) {
-          console.log(pointer);
-          if (pointer.value.name === name) {
-            console.log("BINGO");
-            resolve(pointer.value.keyPath);
-            return;
-          }
-          pointer.continue();
-        } else {
-          const query = objectStore.add({ name: name });
-          query.addEventListener("success", (e) => {
-            console.log("success", e);
-            resolve(1);
-          });
-          // query.addEventListener("complete", (e) => {
-          //   console.log("complete", e);
-          //   resolve(1);
-          // });
-          // query.addEventListener("error", () => {
-          //   console.error("Transaction error");
-          //   resolve(-1);
-          // });
-        }
-      });
-    });
-  }
-  private async initItemTable(transaction: IDBTransaction | null) {
-    if (transaction === null) return;
-    return new Promise((resolve) => {
-      const objectStore = transaction.objectStore(DataBase.ITEMS_TABLE);
-      initialPackingItems.map(
-        async (value: { category: string; name: string }) => {
-          // const cat_id = await this.initCategory(transaction, value.category);
-          // console.log("CAT:", cat_id);
-          const query = objectStore.add({ name: value.name, category: 1 });
-          // query.addEventListener("success", () => {
-          //   console.log("success");
-          // });
-        }
-      );
-      transaction.addEventListener("complete", () => {
-        resolve(true);
-      });
-      transaction.addEventListener("error", () => {
-        console.error("Init: Transaction error");
+      };
+      transaction.onerror = (event) => {
+        console.error("initDefaultCategories: Transaction error", event);
         resolve(false);
-      });
+      };
+    });
+  }
+  private async getAllCategories() {
+    return new Promise<Array<{ name: string; key: number }>>((resolve) => {
+      if (!this.db) {
+        resolve([]);
+        return;
+      }
+      const transaction = this.db.transaction(
+        [DataBase.ITEMS_TABLE, DataBase.CATEGORIES_TABLE],
+        "readonly"
+      );
+      const storeCategories = transaction.objectStore(
+        DataBase.CATEGORIES_TABLE
+      );
+      const query = storeCategories.getAll();
+
+      query.onsuccess = () => {
+        console.log(query);
+        resolve(query.result);
+      };
+      query.onerror = (event) => {
+        event.stopPropagation();
+        console.error("getAllCategoryKeys: Query error", event);
+        resolve([]);
+      };
     });
   }
 
-  private addItem(category: string, name: string) {}
+  private async initDefaults() {
+    console.log("DB", this.db);
+    return new Promise(async (resolve) => {
+      if (!this.db) {
+        resolve(false);
+        return;
+      }
+      await this.initDefaultCategories();
 
-  private addItemTable() {
-    // DataBase.initialPackingItems.map((value) => {
-    //   console.log(value);
-    // });
-    const transaction = this.db.transaction(
-      [DataBase.ITEMS_TABLE],
-      "readwrite"
-    );
-    const objectStore = transaction.objectStore(DataBase.ITEMS_TABLE);
-    const query = objectStore.add({ name: "test" });
-    query.addEventListener("success", () => {
-      // console.log("success");
+      const categoriesDB: Array<{ name: string; key: number }> =
+        await this.getAllCategories();
+      const categories = new Map();
+
+      categoriesDB.forEach((e) => {
+        categories.set(e.name, e.key);
+      });
+
+      const transaction = this.db.transaction(
+        [DataBase.ITEMS_TABLE],
+        "readwrite"
+      );
+      const storeItems = transaction.objectStore(DataBase.ITEMS_TABLE);
+
+      initialPackingItems.map((item: { category: string; name: string }) => {
+        const categoryId = categories.get(item.category) ?? -1;
+        const query = storeItems.add({
+          name: item.name,
+          category_id: categoryId,
+        });
+        query.onsuccess = () => {
+          console.log("success");
+        };
+        query.onerror = (ev) => {
+          console.error("initDefItems: Query error", ev);
+        };
+      });
+
+      transaction.oncomplete = () => {
+        console.log("init TRANS completed");
+        resolve(true);
+      };
+      transaction.onerror = (ev) => {
+        console.error("defaultInit: Transaction error", ev);
+        resolve(false);
+      };
     });
-    transaction.addEventListener("complete", () => {
-      // console.log("complete");
-    });
-    transaction.addEventListener("error", () =>
-      console.error("Transaction error")
-    );
   }
 
   public async getAllItems() {
-    if (this.db === undefined) return [];
-    const transaction = this.db.transaction([DataBase.ITEMS_TABLE], "readonly");
-    const objectStore = transaction.objectStore(DataBase.ITEMS_TABLE);
-
-    return new Promise<ItemType[]>((resolve) => {
-      var result: ItemType[] = [];
-      objectStore.openCursor().addEventListener("success", (e: Event) => {
-        const pointer = (e.target as IDBRequest).result as IDBCursorWithValue;
-        if (pointer) {
-          result.push(pointer.value);
-          pointer.continue();
-        } else resolve(result);
-      });
-    });
+    return [
+      { id: 1, name: "ala" },
+      { id: 2, name: "ola" },
+    ];
   }
 
   private static dataBaseInstance?: DataBase;
   static async getInstance() {
     if (this.dataBaseInstance === undefined) {
       this.dataBaseInstance = new DataBase();
-      await this.dataBaseInstance.init();
     }
     return this.dataBaseInstance;
+  }
+  static delete() {
+    window.indexedDB.deleteDatabase(DataBase.DATABASE_NAME);
   }
 }
 

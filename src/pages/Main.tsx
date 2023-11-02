@@ -27,12 +27,16 @@ function Main(props: MainProps) {
   const navigate = useNavigate();
   const handleClickCreate = () => navigate("/create");
   const handleClickTrash = () => navigate("/trash");
+  const handleClickFactory = () => {
+    DataBase.delete();
+  };
   return (
     <div className="Main">
       Main
       <Button onClick={handleClickCreate}>Create</Button>
       {createTripList(props.database)}
       <Button onClick={handleClickTrash}>Trash</Button>
+      <Button onClick={handleClickFactory}>Factory reset</Button>
     </div>
   );
 }
