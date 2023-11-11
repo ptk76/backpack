@@ -1,3 +1,7 @@
 .Create {
   text-align: center;
 }
+
+.new-item{
+display: flex;
+}
