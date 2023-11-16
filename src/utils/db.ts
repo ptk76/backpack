@@ -25,6 +25,12 @@ export type TripType = {
   trash: boolean;
 };
 
+export type TripItemType = {
+  trip_id: number;
+  item_id: number;
+  active: boolean;
+};
+
 enum TABLES {
   ITEMS = "items",
   CATEGORIES = "categories",
@@ -77,8 +83,8 @@ class DataBase {
     categoriesTable.createIndex("name", "name", { unique: true });
 
     const tripsAndItemsTable = db.createObjectStore(TABLES.TRIPS_AND_ITEMS, {
-      keyPath: "",
-      autoIncrement: false,
+      keyPath: "id",
+      autoIncrement: true,
     });
     tripsAndItemsTable.createIndex("trip_id", "trip_id", { unique: false });
     tripsAndItemsTable.createIndex("item_id", "item_id", { unique: false });
@@ -179,6 +185,31 @@ class DataBase {
     });
   }
 
+  public async getRecord(name: TABLES, id: number) {
+    return new Promise<GenericType>((resolve) => {
+      if (!this.db) {
+        resolve({ id: -1, name: "", category_id: -1, trash: false });
+        return;
+      }
+      const transaction = this.db.transaction([name], "readonly");
+      const store = transaction.objectStore(name);
+      const query = store.get(id);
+
+      query.onsuccess = () => {
+        resolve(query.result);
+      };
+      query.onerror = (event) => {
+        event.stopPropagation();
+        console.error("getRecord: Query error", name, event);
+        resolve({ id: -1, name: "", category_id: -1, trash: false });
+      };
+      transaction.onerror = (event) => {
+        console.error("getRecord: Transaction error", name, event);
+        resolve({ id: -1, name: "", category_id: -1, trash: false });
+      };
+    });
+  }
+
   public async getTable(name: TABLES) {
     return new Promise<Array<GenericType>>((resolve) => {
       if (!this.db) {
@@ -204,6 +235,10 @@ class DataBase {
     });
   }
 
+  public async getItem(id: number): Promise<ItemType> {
+    return await this.getRecord(TABLES.ITEMS, id);
+  }
+
   public async getItems(): Promise<ItemType[]> {
     return await this.getTable(TABLES.ITEMS);
   }
@@ -217,9 +252,9 @@ class DataBase {
   }
 
   public async addTrip(name: string) {
-    return new Promise<void>((resolve) => {
+    return new Promise<number>((resolve) => {
       if (!this.db) {
-        resolve();
+        resolve(-1);
         return;
       }
       const transaction = this.db.transaction([TABLES.TRIPS], "readwrite");
@@ -227,16 +262,94 @@ class DataBase {
       const query = store.add({ name: name });
 
       query.onsuccess = () => {
-        resolve();
+        resolve(Number(query.result));
       };
       query.onerror = (event) => {
         event.stopPropagation();
         console.error("addTrip: Query error", event);
-        resolve();
+        resolve(-1);
       };
       transaction.onerror = (event) => {
         console.error("addTrip: Transaction error", event);
-        resolve();
+        resolve(-1);
+      };
+    });
+  }
+
+  public async createTrip(name: string) {
+    return new Promise<number>(async (resolve) => {
+      const tripId = await this.addTrip(name);
+      const items = await this.getItems();
+
+      if (!this.db) {
+        resolve(-1);
+        return;
+      }
+      const transaction = this.db.transaction(
+        [TABLES.TRIPS_AND_ITEMS],
+        "readwrite"
+      );
+      const store = transaction.objectStore(TABLES.TRIPS_AND_ITEMS);
+
+      items.forEach((item) => {
+        const record: TripItemType = {
+          trip_id: tripId,
+          item_id: item.id,
+          active: true,
+        };
+        console.log(record);
+        const query = store.add(record);
+
+        query.onsuccess = () => {
+          console.log("SUCC:", query.result);
+        };
+        query.onerror = (event) => {
+          event.stopPropagation();
+          console.error("addTrip: Query error", event);
+          resolve(-1);
+        };
+      });
+
+      transaction.onerror = (event) => {
+        console.error("addTrip: Transaction error", event);
+        resolve(-1);
+      };
+
+      resolve(tripId);
+    });
+  }
+
+  public async getPackingList(trpiId: number) {
+    return new Promise<Array<TripItemType>>((resolve) => {
+      if (!this.db) {
+        resolve([]);
+        return;
+      }
+      const transaction = this.db.transaction(
+        [TABLES.TRIPS_AND_ITEMS],
+        "readonly"
+      );
+      const store = transaction.objectStore(TABLES.TRIPS_AND_ITEMS);
+      const cursorRequest = store.openCursor();
+      const result: Array<TripItemType> = [];
+      cursorRequest.onsuccess = () => {
+        const cursor = cursorRequest.result;
+        if (cursor) {
+          if (cursor.value.trip_id === trpiId) result.push(cursor.value);
+          cursor.continue();
+        } else {
+          console.log("Exhausted all documents");
+          resolve(result);
+        }
+      };
+      cursorRequest.onerror = (event) => {
+        event.stopPropagation();
+        console.error("getPackingList: Query error", event);
+        resolve([]);
+      };
+      transaction.onerror = (event) => {
+        console.error("getPackingList: Transaction error", event);
+        resolve([]);
       };
     });
   }

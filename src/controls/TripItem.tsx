@@ -9,13 +9,14 @@ import { ListItemContent } from "@mui/joy";
 
 type TripItemProps = {
   name: string;
+  onClick: () => void;
 };
 
 function TripItem(props: TripItemProps) {
   return (
     <div className="TripItem">
       <ListItem>
-        <ListItemButton>
+        <ListItemButton onClick={props.onClick}>
           <ListItemContent>{props.name}</ListItemContent>
         </ListItemButton>
       </ListItem>

@@ -13,10 +13,18 @@ type MainProps = {
   database: DataBase;
 };
 
-async function createTripList(db: DataBase) {
+async function createTripList(db: DataBase, navigate: any) {
   const trips = await db.getTrips();
   const tripList = trips.map((trip) => {
-    return <TripItem key={trip.id} name={trip.name}></TripItem>;
+    return (
+      <TripItem
+        key={trip.id}
+        name={trip.name}
+        onClick={() => {
+          navigate("packing", { state: { tripId: trip.id } });
+        }}
+      ></TripItem>
+    );
   });
 
   return <List>{tripList}</List>;
@@ -30,25 +38,25 @@ function Main(props: MainProps) {
     DataBase.delete();
   };
   const onClickNewTrip = async () => {
-    await props.database.addTrip("Ala ma kota");
+    await props.database.createTrip("Ala ma kota");
   };
-  const [trpiList, setTripList] = useState(<></>);
+  const [tripList, setTripList] = useState(<></>);
 
   const updateTripList = async () => {
-    const items = await createTripList(props.database);
+    const items = await createTripList(props.database, navigate);
     setTripList(items);
   };
 
   useEffect(() => {
     updateTripList();
     return () => {};
-  }, [trpiList]);
+  }, [tripList]);
 
   return (
     <div className="Main">
       Main
       <Button onClick={handleClickCreate}>Create</Button>
-      {trpiList}
+      {tripList}
       <Button onClick={onClickNewTrip}>New trip</Button>
       <Button onClick={handleClickTrash}>Trash</Button>
       <Button onClick={handleClickFactory}>Factory reset</Button>
