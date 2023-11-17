@@ -26,6 +26,7 @@ export type TripType = {
 };
 
 export type TripItemType = {
+  id?: number;
   trip_id: number;
   item_id: number;
   active: boolean;
@@ -338,7 +339,6 @@ class DataBase {
           if (cursor.value.trip_id === trpiId) result.push(cursor.value);
           cursor.continue();
         } else {
-          console.log("Exhausted all documents");
           resolve(result);
         }
       };
