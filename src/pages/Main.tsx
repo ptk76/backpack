@@ -2,18 +2,18 @@ import "./Main.css";
 import { useEffect, useState } from "react";
 
 import { useNavigate } from "react-router-dom";
-import DataBase from "../utils/db";
 
 import Button from "@mui/joy/Button";
 import List from "@mui/joy/List";
 
 import TripItem from "../controls/TripItem";
+import DataBaseFacade from "../utils/db_facade";
 
 type MainProps = {
-  database: DataBase;
+  db: DataBaseFacade;
 };
 
-async function createTripList(db: DataBase, navigate: any) {
+async function createTripList(db: DataBaseFacade, navigate: any) {
   const trips = await db.getTrips();
   const tripList = trips.map((trip) => {
     return (
@@ -35,22 +35,23 @@ function Main(props: MainProps) {
   const handleClickCreate = () => navigate("/create");
   const handleClickTrash = () => navigate("/trash");
   const handleClickFactory = () => {
-    DataBase.delete();
+    props.db.delete();
   };
   const onClickNewTrip = async () => {
-    await props.database.createTrip("Ala ma kota");
+    await props.db.createTrip("Ala ma kota");
+    updateTripList();
   };
   const [tripList, setTripList] = useState(<></>);
 
   const updateTripList = async () => {
-    const items = await createTripList(props.database, navigate);
+    const items = await createTripList(props.db, navigate);
     setTripList(items);
   };
 
   useEffect(() => {
     updateTripList();
     return () => {};
-  }, [tripList]);
+  }, []);
 
   return (
     <div className="Main">

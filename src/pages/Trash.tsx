@@ -1,10 +1,10 @@
 import Button from "@mui/joy/Button";
 import "./Trash.css";
 import { useNavigate } from "react-router-dom";
-import DataBase from "../utils/db";
+import DataBaseFacade from "../utils/db_facade";
 
 type TrashProps = {
-  database: DataBase;
+  db: DataBaseFacade;
 };
 
 function Trash(props: TrashProps) {

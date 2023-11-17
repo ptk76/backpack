@@ -4,16 +4,16 @@ import Trash from "./pages/Trash";
 import Create from "./pages/Create";
 import Packing from "./pages/Packing";
 import { Routes, Route } from "react-router-dom";
-import DataBase from "./utils/db";
+import DataBaseFacade from "./utils/db_facade";
 
-function App(props: { db: DataBase }) {
+function App(props: { db: DataBaseFacade }) {
   return (
     <div className="App">
       <Routes>
-        <Route path="/" element={<Main database={props.db} />} />
-        <Route path="create" element={<Create database={props.db} />} />
-        <Route path="packing" element={<Packing database={props.db} />} />
-        <Route path="trash" element={<Trash database={props.db} />} />
+        <Route path="/" element={<Main db={props.db} />} />
+        <Route path="create" element={<Create db={props.db} />} />
+        <Route path="packing" element={<Packing db={props.db} />} />
+        <Route path="trash" element={<Trash db={props.db} />} />
       </Routes>
     </div>
   );

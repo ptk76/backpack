@@ -3,11 +3,11 @@ import "./Packing.css";
 import { useEffect, useState } from "react";
 
 import { useNavigate, useLocation } from "react-router-dom";
-import DataBase from "../utils/db";
 import Item from "../controls/Item";
 import List from "@mui/joy/List";
+import DataBaseFacade from "../utils/db_facade";
 
-async function createPackingList(db: DataBase, tripId: number) {
+async function createPackingList(db: DataBaseFacade, tripId: number) {
   const packingItems = await db.getPackingList(tripId);
   const categories = await db.getCategoryMap();
   const items = await db.getItems();
@@ -41,7 +41,7 @@ async function createPackingList(db: DataBase, tripId: number) {
   return <List>{itemNodes}</List>;
 }
 
-function Packing(props: { database: DataBase }) {
+function Packing(props: { db: DataBaseFacade }) {
   const navigate = useNavigate();
   const { state } = useLocation();
   const { tripId } = state;
@@ -50,7 +50,7 @@ function Packing(props: { database: DataBase }) {
   const [packingList, setPackingList] = useState(<></>);
 
   const updatePackingList = async () => {
-    const items = await createPackingList(props.database, tripId);
+    const items = await createPackingList(props.db, tripId);
     setPackingList(items);
   };
 

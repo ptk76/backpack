@@ -5,12 +5,12 @@ import Option from "@mui/joy/Option";
 import "./Create.css";
 import { useNavigate } from "react-router-dom";
 
-import DataBase, { CategoryType, ItemType } from "../utils/db";
 import { List } from "@mui/joy";
 import CreateItem from "../controls/CreateItem";
 import { useEffect, useState } from "react";
+import DataBaseFacade, { CategoryType, ItemType } from "../utils/db_facade";
 
-async function createItemList(db: DataBase) {
+async function createItemList(db: DataBaseFacade) {
   const categories = await db.getCategoryMap();
   const items = await db.getItems();
   const listItems = items.map((item) => {
@@ -32,7 +32,7 @@ async function createItemList(db: DataBase) {
   return <List>{listItems}</List>;
 }
 
-function Create(props: { database: DataBase }) {
+function Create(props: { db: DataBaseFacade }) {
   const navigate = useNavigate();
   const handleClickBack = () => navigate("/");
   const [itemList, setItemList] = useState(<></>);
@@ -52,7 +52,7 @@ function Create(props: { database: DataBase }) {
   };
 
   const selectCategoryMenu = async () => {
-    const categories = await props.database.getCategories();
+    const categories = await props.db.getCategories();
     setAddNewItem(!addNewItem);
     setNewItem(
       <div className="new-item">
@@ -69,7 +69,7 @@ function Create(props: { database: DataBase }) {
   };
 
   const updateItemList = async () => {
-    const items = await createItemList(props.database);
+    const items = await createItemList(props.db);
     setItemList(items);
   };
 
