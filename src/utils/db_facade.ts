@@ -1,4 +1,4 @@
-import DataBase, { TABLES, TripItemType } from "./db";
+import DataBase, { TABLES } from "./db";
 
 export type ItemType = {
   id: number;
@@ -15,6 +15,13 @@ export type TripType = {
   id: number;
   name: string;
   trash: boolean;
+};
+
+export type TripItemType = {
+  id?: number;
+  trip_id: number;
+  item_id: number;
+  active: boolean;
 };
 
 class DataBaseFacade {

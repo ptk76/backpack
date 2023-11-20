@@ -7,28 +7,9 @@ type GenericType = {
   trash: boolean;
 };
 
-export type ItemType = {
-  id: number;
-  name: string;
-  category_id: number;
-};
-
 export type CategoryType = {
   id: number;
   name: string;
-};
-
-export type TripType = {
-  id: number;
-  name: string;
-  trash: boolean;
-};
-
-export type TripItemType = {
-  id?: number;
-  trip_id: number;
-  item_id: number;
-  active: boolean;
 };
 
 export enum TABLES {
@@ -89,29 +70,6 @@ class DataBase {
     });
   }
 
-  public async getTable(table: TABLES) {
-    return new Promise<Array<GenericType>>((resolve, reject) => {
-      if (!this.db) {
-        reject("Database is NULL");
-        return;
-      }
-      const transaction = this.db.transaction([table], "readonly");
-      const store = transaction.objectStore(table);
-      const query = store.getAll();
-
-      query.onsuccess = () => {
-        resolve(query.result);
-      };
-      query.onerror = (event) => {
-        event.stopPropagation();
-        reject(event);
-      };
-      transaction.onerror = (event) => {
-        reject(event);
-      };
-    });
-  }
-
   public async getRecords(
     table: TABLES,
     conditionFunction: (item: object) => boolean
@@ -135,6 +93,29 @@ class DataBase {
         }
       };
       cursorRequest.onerror = (event) => {
+        event.stopPropagation();
+        reject(event);
+      };
+      transaction.onerror = (event) => {
+        reject(event);
+      };
+    });
+  }
+
+  public async getTable(table: TABLES) {
+    return new Promise<Array<GenericType>>((resolve, reject) => {
+      if (!this.db) {
+        reject("Database is NULL");
+        return;
+      }
+      const transaction = this.db.transaction([table], "readonly");
+      const store = transaction.objectStore(table);
+      const query = store.getAll();
+
+      query.onsuccess = () => {
+        resolve(query.result);
+      };
+      query.onerror = (event) => {
         event.stopPropagation();
         reject(event);
       };
