@@ -1,9 +1,12 @@
-import initialPackingItems from "./db_def";
+import defItems from './db_def.json';
+import type { ItemType, TripType } from './db_facade';
 
 type GenericType = {
   id: number;
   name: string;
   category_id: number;
+  trip_id: number;
+  item_id: number;
   trash: boolean;
 };
 
@@ -12,12 +15,11 @@ export type CategoryType = {
   name: string;
 };
 
-export enum TABLES {
-  ITEMS = "items",
-  CATEGORIES = "categories",
-  TRIPS = "trips",
-  TRIPS_AND_ITEMS = "trips_and_items",
-}
+export const TABLE_ITEMS = "items";
+export const TABLE_CATEGORIES = "categories";
+export const TABLE_TRIPS = "trips";
+export const TABLE_TRIPS_AND_ITEMS = "trips_and_items";
+type TABLES = typeof TABLE_ITEMS | typeof TABLE_CATEGORIES | typeof TABLE_TRIPS | typeof TABLE_TRIPS_AND_ITEMS;
 
 class DataBase {
   static readonly DATABASE_VER = 1;
@@ -34,10 +36,13 @@ class DataBase {
       dbOpenRequest.onerror = (event) => {
         reject(event);
       };
-      dbOpenRequest.onsuccess = async (event) => {
+      dbOpenRequest.onsuccess = async () => {
         this.db = dbOpenRequest.result;
-        if ((await this.countTable(TABLES.CATEGORIES)) === 0)
-          this.initDefaults();
+        if ((await this.countTable(TABLE_CATEGORIES)) === 0) {
+          await this.initDefaults();
+          await this.initDefaultTrip()
+          await this.initDefaultTrip2()
+        }
         resolve();
       };
       dbOpenRequest.onupgradeneeded = (event) => {
@@ -183,20 +188,20 @@ class DataBase {
       console.error("Error initializing database", event);
     };
 
-    const tripsTable = db.createObjectStore(TABLES.TRIPS, {
+    const tripsTable = db.createObjectStore(TABLE_TRIPS, {
       keyPath: "id",
       autoIncrement: true,
     });
     tripsTable.createIndex("name", "name", { unique: false });
     tripsTable.createIndex("trash", "trash", { unique: false });
 
-    const categoriesTable = db.createObjectStore(TABLES.CATEGORIES, {
+    const categoriesTable = db.createObjectStore(TABLE_CATEGORIES, {
       keyPath: "id",
       autoIncrement: true,
     });
     categoriesTable.createIndex("name", "name", { unique: true });
 
-    const tripsAndItemsTable = db.createObjectStore(TABLES.TRIPS_AND_ITEMS, {
+    const tripsAndItemsTable = db.createObjectStore(TABLE_TRIPS_AND_ITEMS, {
       keyPath: "id",
       autoIncrement: true,
     });
@@ -204,7 +209,7 @@ class DataBase {
     tripsAndItemsTable.createIndex("item_id", "item_id", { unique: false });
     tripsAndItemsTable.createIndex("active", "active", { unique: false });
 
-    const itemsTable = db.createObjectStore(TABLES.ITEMS, {
+    const itemsTable = db.createObjectStore(TABLE_ITEMS, {
       keyPath: "id",
       autoIncrement: true,
     });
@@ -221,7 +226,7 @@ class DataBase {
       await this.initDefaultCategories();
 
       const categoriesDB: Array<CategoryType> = await this.getTable(
-        TABLES.CATEGORIES
+        TABLE_CATEGORIES
       );
       const categories = new Map();
 
@@ -229,19 +234,23 @@ class DataBase {
         categories.set(e.name, e.id);
       });
 
-      const transaction = this.db.transaction([TABLES.ITEMS], "readwrite");
-      const storeItems = transaction.objectStore(TABLES.ITEMS);
+      const transaction = this.db.transaction([TABLE_ITEMS], "readwrite");
+      const storeItems = transaction.objectStore(TABLE_ITEMS);
 
-      initialPackingItems.map((item: { category: string; name: string }) => {
-        const categoryId = categories.get(item.category) ?? -1;
-        const query = storeItems.add({
-          name: item.name,
-          category_id: categoryId,
+      defItems.categories.forEach((category: any) => {
+        // console.log(`Adding category: ${category.name}`);
+        category.items.forEach((item: string) => {
+          // console.log(`Adding item: ${item}`);
+          const categoryId = categories.get(category.name) ?? -1;
+          const query = storeItems.add({
+            name: item,
+            category_id: categoryId,
+          });
+
+          query.onerror = (ev) => {
+            reject(ev);
+          };
         });
-
-        query.onerror = (ev) => {
-          reject(ev);
-        };
       });
 
       transaction.oncomplete = () => {
@@ -272,13 +281,14 @@ class DataBase {
         reject("Database is null");
         return;
       }
-      const transaction = this.db.transaction([TABLES.CATEGORIES], "readwrite");
-      const store = transaction.objectStore(TABLES.CATEGORIES);
+      const transaction = this.db.transaction([TABLE_CATEGORIES], "readwrite");
+      const store = transaction.objectStore(TABLE_CATEGORIES);
 
       const uniqueCategories = new Set<string>();
-      initialPackingItems.forEach((element) => {
-        uniqueCategories.add(element.category);
-      });
+      defItems.categories.forEach((category: any) => {
+        // console.log(`Adding category: ${category.name}`);
+        uniqueCategories.add(category.name);
+      })
 
       uniqueCategories.forEach((category) => {
         const query = store.add({
@@ -295,6 +305,75 @@ class DataBase {
       };
       transaction.onerror = (event) => {
         reject(event);
+      };
+    });
+  }
+
+
+  private async initDefaultTrip() {
+    return new Promise<void>(async (resolve, reject) => {
+      if (!this.db) {
+        reject("Database is null");
+        return;
+      }
+      const transaction = this.db.transaction([TABLE_TRIPS], "readwrite");
+      const store = transaction.objectStore(TABLE_TRIPS);
+
+      const query = store.add({
+        name: "default",
+      });
+
+      query.onerror = (event) => {
+        event.stopPropagation();
+        reject(event);
+      };
+
+      transaction.oncomplete = () => {
+        resolve();
+      };
+      transaction.onerror = (event) => {
+        reject(event);
+      };
+    });
+  }
+
+  private async initDefaultTrip2() {
+    return new Promise<void>(async (resolve, reject) => {
+      if (!this.db) {
+        reject("Database is NULL");
+        return;
+      }
+
+      const tripsDB: Array<TripType> = await this.getTable(
+        TABLE_TRIPS
+      );
+      const tripId = tripsDB[0]?.id;
+      if (!tripId) {
+        reject("No trip found in database");
+        return;
+      }
+      const itemsDB: Array<ItemType> = await this.getTable(
+        TABLE_ITEMS
+      );
+
+      const transaction = this.db.transaction([TABLE_TRIPS_AND_ITEMS], "readwrite");
+      const storeItems = transaction.objectStore(TABLE_TRIPS_AND_ITEMS);
+
+      itemsDB.forEach((e) => {
+        const query = storeItems.add({
+          trip_id: tripId,
+          item_id: e.id,
+          active: true
+        });
+        query.onerror = (ev) => {
+          reject(ev);
+        };
+      });
+      transaction.oncomplete = () => {
+        resolve();
+      };
+      transaction.onerror = (ev) => {
+        reject(ev);
       };
     });
   }
