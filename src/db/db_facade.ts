@@ -1,5 +1,10 @@
 import { createContext } from "react";
-import DataBase, { TABLE_CATEGORIES, TABLE_ITEMS, TABLE_TRIPS, TABLE_TRIPS_AND_ITEMS } from "./db";
+import DataBase, {
+  TABLE_CATEGORIES,
+  TABLE_ITEMS,
+  TABLE_TRIPS,
+  TABLE_TRIPS_AND_ITEMS,
+} from "./db";
 
 export type ItemType = {
   id: number;
@@ -22,15 +27,16 @@ export type TripItemType = {
   id?: number;
   trip_id: number;
   item_id: number;
-  active: boolean;
+  packed: boolean;
+  enabled: boolean;
 };
 
-export type ItemCategoryEnabledActiveType = {
+export type ItemCategoryPackedEnabledType = {
   id: number;
   name: string;
   category_id: number;
+  packed: boolean;
   enabled: boolean;
-  active: boolean;
 };
 
 class DataBaseFacade {
@@ -47,48 +53,37 @@ class DataBaseFacade {
   public async getItems(): Promise<ItemType[]> {
     return await this.db.getTable(TABLE_ITEMS);
   }
+
   public async getItemsByCategory(categoryId: number): Promise<ItemType[]> {
     const items = await this.db.getTable(TABLE_ITEMS);
-    const itemsByCategory = items.filter((item) => item.category_id === categoryId);
+    const itemsByCategory = items.filter(
+      (item) => item.category_id === categoryId
+    );
     return itemsByCategory;
   }
 
-  public async selectItemCategoryActiveByTrip(tripId: number): Promise<ItemCategoryEnabledActiveType[]> {
-    const tripAndItems = await this.db.getRecords(
+  public async selectItemCategoryActiveByTrip(
+    tripId: number
+  ): Promise<ItemCategoryPackedEnabledType[]> {
+    const tripAndItems = (await this.db.getRecords(
       TABLE_TRIPS_AND_ITEMS,
-      element => (element as TripItemType).trip_id === tripId) as unknown as TripItemType[];
+      (element) => (element as TripItemType).trip_id === tripId
+    )) as unknown as TripItemType[];
 
-    const items = await this.db.getTable(TABLE_ITEMS) as ItemType[]
-    const itemCategoryActive: ItemCategoryEnabledActiveType[] = [];
+    const items = (await this.db.getTable(TABLE_ITEMS)) as ItemType[];
+    const itemCategoryActive: ItemCategoryPackedEnabledType[] = [];
     for (const record of tripAndItems) {
-      const item = items.find(item => item.id === record.item_id);
+      const item = items.find((item) => item.id === record.item_id);
       if (item)
-        itemCategoryActive.push({ id: item.id, name: item.name, active: record.active, category_id: item.category_id, enabled: false } as ItemCategoryEnabledActiveType);
-
+        itemCategoryActive.push({
+          id: item.id,
+          name: item.name,
+          packed: record.packed,
+          category_id: item.category_id,
+          enabled: record.enabled,
+        } as ItemCategoryPackedEnabledType);
     }
     return itemCategoryActive;
-  }
-
-  public async getItemsByTripAndCategory(tripId: number, categoryId: number): Promise<ItemType[]> {
-    const tripsAndItems = await this.db.getTable(TABLE_TRIPS_AND_ITEMS) as unknown as TripItemType[];
-    console.log("tripsAndItems", tripsAndItems);
-    const itemsIdsByTrip = tripsAndItems.filter((item) => item.trip_id === tripId);
-    console.log("itemsIdsByTrip", itemsIdsByTrip);
-    const items = await this.db.getTable(TABLE_ITEMS) as ItemType[];
-    console.log("items", items);
-    return items
-
-    // let itemsByCategory: ItemType[] = [];
-    const itemsByCategory = itemsIdsByTrip.map(async (i) => {
-      const item = await this.getItem(i.item_id)
-      if (item.category_id === categoryId) {
-        // itemsByCategory.push(item);
-        return item;
-      } else {
-        return null;
-      }
-    })
-    // return itemsByCategory;
   }
 
   public async getCategories(): Promise<CategoryType[]> {
@@ -138,4 +133,6 @@ class DataBaseFacade {
 }
 
 export default DataBaseFacade;
-export const DataBaseFacadeContext = createContext<DataBaseFacade>(null as unknown as DataBaseFacade);
+export const DataBaseFacadeContext = createContext<DataBaseFacade>(
+  null as unknown as DataBaseFacade
+);

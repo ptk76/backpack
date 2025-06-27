@@ -1,8 +1,10 @@
 import "./Packing.css";
 import { useContext, useEffect, useState } from "react";
 
-import DataBaseFacade, { DataBaseFacadeContext, type ItemCategoryEnabledActiveType } from "./db/db_facade";
-
+import DataBaseFacade, {
+  DataBaseFacadeContext,
+  type ItemCategoryPackedEnabledType,
+} from "./db/db_facade";
 
 function handleClickItem(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
   const element = event.currentTarget;
@@ -13,7 +15,9 @@ function handleClickItem(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
   }
 }
 
-function handleClickItemEdit(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
+function handleClickItemEdit(
+  event: React.MouseEvent<HTMLDivElement, MouseEvent>
+) {
   const element = event.currentTarget;
   if (element.classList.contains("ItemHide")) {
     element.classList.remove("ItemHide");
@@ -31,13 +35,13 @@ let movingElement = {
   target: null as HTMLDivElement | null,
   x: 0,
   y: 0,
-}
+};
 
 function handleMouseDown(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
   movingElement.target = event.currentTarget;
   movingElement.x = event.clientX;
   movingElement.y = event.clientY;
-  console.log("down", event)
+  console.log("down", event);
 }
 function handleMouseMove(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
   if (movingElement.target === null) return;
@@ -52,11 +56,11 @@ function handleMouseMove(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
     movingElement.target.classList.remove("ItemRemove");
   }
 
-  console.log("move", event)
+  console.log("move", event);
 }
 function handleMouseUp(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
   if (movingElement.target === null) return;
-  const offset = Math.abs(event.clientX - movingElement.x)
+  const offset = Math.abs(event.clientX - movingElement.x);
   console.log("up", offset);
   if (offset < 10) {
     handleClickItem(event);
@@ -68,28 +72,50 @@ function handleMouseUp(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
   movingElement.target = null;
 }
 
-async function getItemsByCategory(categoryId: number, items: ItemCategoryEnabledActiveType[], editMode: boolean) {
+async function getItemsByCategory(
+  categoryId: number,
+  items: ItemCategoryPackedEnabledType[],
+  editMode: boolean,
+  onClickPack: (itemId: number) => void
+) {
   const result = [];
   for (const item of items) {
     if (item.category_id === categoryId) {
       result.push(
-        <div className={editMode ? "edit-items" : item.enabled ? "PackingItems" : "PackingItems ItemOff"}
-          id={"item_" + item.id} key={item.id}
+        <div
+          className={
+            editMode
+              ? item.enabled
+                ? "edit-items"
+                : "edit-items ItemRemove"
+              : item.enabled
+              ? !item.packed
+                ? "PackingItems"
+                : "PackingItems ItemOff"
+              : "PackingItems ItemRemoved"
+          }
+          id={"item_" + item.id}
+          key={item.id}
           // onMouseDown={handleMouseDown}
           // onMouseMove={handleMouseMove}
           // onMouseUp={handleMouseUp}
-          onClick={editMode ? handleClickItemEdit : handleClickItem}>
+          // onClick={editMode ? handleClickItemEdit : onClickPack}
+          onClick={() => onClickPack(item.id)}
+        >
           {item.name}
         </div>
       );
     }
   }
   return <>{result}</>;
-
 }
 
-async function createPackingList(db: DataBaseFacade, items: ItemCategoryEnabledActiveType[], editMode: boolean) {
-
+async function createPackingList(
+  db: DataBaseFacade,
+  items: ItemCategoryPackedEnabledType[],
+  editMode: boolean,
+  onClickPack: (itemId: number) => void
+) {
   const categories = await db.getCategories();
 
   const result = categories.map(async (category) => {
@@ -100,7 +126,12 @@ async function createPackingList(db: DataBaseFacade, items: ItemCategoryEnabledA
             {category.name}
           </div>
           <div>
-            {await getItemsByCategory(category.id, items, editMode)}
+            {await getItemsByCategory(
+              category.id,
+              items,
+              editMode,
+              onClickPack
+            )}
           </div>
         </div>
       </>
@@ -111,37 +142,57 @@ async function createPackingList(db: DataBaseFacade, items: ItemCategoryEnabledA
 }
 
 function Packing() {
-  const [itemTable, setItemTable] = useState<ItemCategoryEnabledActiveType[]>([]);
+  const [itemTable, setItemTable] = useState<ItemCategoryPackedEnabledType[]>(
+    []
+  );
   const [packingList, setPackingList] = useState(<></>);
   const [editMode, setEditMode] = useState(false);
   const db = useContext(DataBaseFacadeContext);
 
+  const onClickPack = (itemId: number) => {
+    console.log(itemId, editMode);
+    setItemTable(
+      itemTable.map((item) => {
+        if (item.id === itemId)
+          editMode
+            ? (item.enabled = !item.enabled)
+            : (item.packed = !item.packed);
+        return item;
+      })
+    );
+  };
+
   const updatePackingList = async () => {
-    const items = await createPackingList(db, itemTable, editMode);
+    const items = await createPackingList(db, itemTable, editMode, onClickPack);
     setPackingList(items);
   };
 
   useEffect(() => {
-    console.log("DUPA")
-    db.selectItemCategoryActiveByTrip(1).then(items => setItemTable(items));
-    return () => { };
+    db.selectItemCategoryActiveByTrip(1).then((items) => setItemTable(items));
+    return () => {};
   }, []);
 
   useEffect(() => {
     updatePackingList();
-    return () => { };
-  }, [itemTable]);
+    return () => {};
+  }, [itemTable, editMode]);
 
   return (
     <>
       <div className="menu-container">
         <div className="menu">RESET</div>
-        <div className="menu" onClick={() => { setEditMode(!editMode); updatePackingList() }}>{editMode ? "EDIT" : "Pack"}</div>
+        <div
+          className="menu"
+          onClick={() => {
+            setEditMode(!editMode);
+            updatePackingList();
+          }}
+        >
+          {editMode ? "EDIT" : "Pack"}
+        </div>
         <div className="menu">ADD</div>
       </div>
-      <div className="container">
-        {packingList}
-      </div>
+      <div className="container">{packingList}</div>
     </>
   );
 }
