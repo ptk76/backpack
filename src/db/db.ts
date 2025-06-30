@@ -157,6 +157,29 @@ class DataBase {
     });
   }
 
+  public updateRecord(table: TABLES, key: number, record: object) {
+    return new Promise<number>((resolve, reject) => {
+      if (!this.db) {
+        reject("Database is NULL");
+        return;
+      }
+      const transaction = this.db.transaction([table], "readwrite");
+      const store = transaction.objectStore(table);
+      const query = store.put(record);
+
+      query.onsuccess = () => {
+        resolve(Number(query.result));
+      };
+      query.onerror = (event) => {
+        event.stopPropagation();
+        reject(event);
+      };
+      transaction.onerror = (event) => {
+        reject(event);
+      };
+    });
+  }
+
   public async addRecords(table: TABLES, items: Array<object>) {
     return new Promise<void>(async (resolve, reject) => {
       if (!this.db) {

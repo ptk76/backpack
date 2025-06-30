@@ -24,7 +24,7 @@ export type TripType = {
 };
 
 export type TripItemType = {
-  id?: number;
+  id: number;
   trip_id: number;
   item_id: number;
   packed: boolean;
@@ -62,6 +62,23 @@ class DataBaseFacade {
     return itemsByCategory;
   }
 
+  public async getTripItem(
+    tripId: number,
+    itemId: number
+  ): Promise<TripItemType> {
+    const tripItem = (await this.db.getRecords(
+      TABLE_TRIPS_AND_ITEMS,
+      (element) =>
+        (element as TripItemType).trip_id === tripId &&
+        (element as TripItemType).item_id === itemId
+    )) as unknown as TripItemType[];
+    return tripItem[0];
+  }
+
+  public async setTripItem(tripItem: TripItemType): Promise<void> {
+    await this.db.updateRecord(TABLE_TRIPS_AND_ITEMS, tripItem.id, tripItem);
+  }
+
   public async selectItemCategoryActiveByTrip(
     tripId: number
   ): Promise<ItemCategoryPackedEnabledType[]> {
@@ -76,7 +93,7 @@ class DataBaseFacade {
       const item = items.find((item) => item.id === record.item_id);
       if (item)
         itemCategoryActive.push({
-          id: item.id,
+          id: record.id,
           name: item.name,
           packed: record.packed,
           category_id: item.category_id,

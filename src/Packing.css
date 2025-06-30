@@ -12,6 +12,21 @@
   border-radius: 8px;
   margin: 6px;
   padding: 10px;
+  cursor: pointer;
+}
+
+.disabled {
+  opacity: 10%;
+  cursor: default;
+}
+
+.reset.add {
+  opacity: 10%;
+  background-color: lightgreen;
+  color: black;
+  border-radius: 8px;
+  margin: 6px;
+  padding: 10px;
   width: 100px;
 }
 
