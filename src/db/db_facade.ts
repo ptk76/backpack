@@ -76,7 +76,7 @@ class DataBaseFacade {
   }
 
   public async setTripItem(tripItem: TripItemType): Promise<void> {
-    await this.db.updateRecord(TABLE_TRIPS_AND_ITEMS, tripItem.id, tripItem);
+    await this.db.updateRecord(TABLE_TRIPS_AND_ITEMS, tripItem);
   }
 
   public async selectItemCategoryActiveByTrip(

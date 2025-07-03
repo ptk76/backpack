@@ -157,7 +157,7 @@ class DataBase {
     });
   }
 
-  public updateRecord(table: TABLES, key: number, record: object) {
+  public updateRecord(table: TABLES, record: object) {
     return new Promise<number>((resolve, reject) => {
       if (!this.db) {
         reject("Database is NULL");
