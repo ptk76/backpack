@@ -1,4 +1,4 @@
-import "./Packing.css";
+import "./Edit.css";
 import { useContext, useEffect, useState } from "react";
 
 import DataBaseFacade, {
@@ -15,10 +15,9 @@ async function getItemsByCategory(
   const result = [];
   for (const item of items) {
     if (item.category_id === categoryId) {
-      if (!item.enabled) continue;
       result.push(
         <div
-          className={!item.packed ? "PackingItems" : "PackingItems ItemOff"}
+          className={item.enabled ? "edit-items" : "edit-items ItemRemove"}
           id={"item_" + item.id}
           key={item.id}
           onClick={() => onClickPack(item.id)}
@@ -59,7 +58,7 @@ async function createPackingList(
   return <>{result}</>;
 }
 
-function Packing() {
+function Edit() {
   const [itemTable, setItemTable] = useState<ItemCategoryPackedEnabledType[]>(
     []
   );
@@ -68,12 +67,12 @@ function Packing() {
 
   const onClickPack = async (itemId: number) => {
     let tripItem: TripItemType = await db.getTripItem(1, itemId);
-    tripItem.packed = !tripItem.packed;
+    tripItem.enabled = !tripItem.enabled;
     await db.setTripItem(tripItem);
 
     setItemTable(
       itemTable.map((item) => {
-        if (item.id === itemId) item.packed = !item.packed;
+        if (item.id === itemId) item.enabled = !item.enabled;
         return item;
       })
     );
@@ -101,4 +100,4 @@ function Packing() {
   );
 }
 
-export default Packing;
+export default Edit;
