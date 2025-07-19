@@ -4,6 +4,7 @@ import Add from "./Add";
 import Edit from "./Edit";
 import { useState } from "react";
 import DataBase from "./db/db";
+import imgEdit from "./assets/edit.png";
 
 function App() {
   const [editMode, setEditMode] = useState(false);
@@ -49,7 +50,7 @@ function App() {
               setEditMode(!editMode);
             }}
           >
-            {!editMode && <img src="src/assets/edit.png" width="48px" />}
+            {!editMode && <img src={imgEdit} width="48px" />}
             {editMode && "Wróć do pakowania"}
           </div>
         </div>
