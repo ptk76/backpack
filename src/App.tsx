@@ -2,8 +2,7 @@ import "./App.css";
 import Packing from "./Packing";
 import Add from "./Add";
 import Edit from "./Edit";
-import { useContext, useState } from "react";
-import { DataBaseFacadeContext } from "./db/db_facade";
+import { useState } from "react";
 import DataBase from "./db/db";
 
 function App() {
@@ -12,7 +11,6 @@ function App() {
   const [refresh, setRefresh] = useState(1);
 
   const onCloseAdd = () => {
-    console.log("close add");
     setShowAdd(false);
     setRefresh(refresh + 1);
   };

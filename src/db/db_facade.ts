@@ -113,7 +113,6 @@ class DataBaseFacade {
     const items = await this.db.getRecords(TABLE_ITEMS, (item) => {
       return (item as ItemType).name === itemName;
     });
-    console.log(items);
     if (items.length > 0) return;
 
     const categories = (await this.db.getRecords(TABLE_CATEGORIES, (cat) => {
