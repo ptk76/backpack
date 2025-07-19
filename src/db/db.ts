@@ -266,9 +266,7 @@ class DataBase {
       const storeItems = transaction.objectStore(TABLE_ITEMS);
 
       defItems.categories.forEach((category: any) => {
-        // console.log(`Adding category: ${category.name}`);
         category.items.forEach((item: string) => {
-          // console.log(`Adding item: ${item}`);
           const categoryId = categories.get(category.name) ?? -1;
           const query = storeItems.add({
             name: item,
@@ -314,7 +312,6 @@ class DataBase {
 
       const uniqueCategories = new Set<string>();
       defItems.categories.forEach((category: any) => {
-        // console.log(`Adding category: ${category.name}`);
         uniqueCategories.add(category.name);
       });
 

@@ -103,6 +103,49 @@ class DataBaseFacade {
     return itemCategoryActive;
   }
 
+  public async addItem(
+    categoryName: string | null,
+    itemName: string | null,
+    currentTrip = -1
+  ): Promise<void> {
+    if (!categoryName || !itemName) return;
+
+    const items = await this.db.getRecords(TABLE_ITEMS, (item) => {
+      return (item as ItemType).name === itemName;
+    });
+    console.log(items);
+    if (items.length > 0) return;
+
+    const categories = (await this.db.getRecords(TABLE_CATEGORIES, (cat) => {
+      return (
+        (cat as CategoryType).name.toLocaleUpperCase() ===
+        categoryName.toLocaleUpperCase()
+      );
+    })) as CategoryType[];
+
+    let categoryId = -1;
+    if (categories.length === 0)
+      categoryId = await this.db.addRecord(TABLE_CATEGORIES, {
+        name: categoryName,
+      });
+    else categoryId = categories[0].id;
+
+    const itemId = await this.db.addRecord(TABLE_ITEMS, {
+      name: itemName,
+      category_id: categoryId,
+    });
+
+    if (currentTrip !== -1) {
+      const record = {
+        trip_id: currentTrip,
+        item_id: itemId,
+        packed: false,
+        enabled: true,
+      };
+      await this.db.addRecord(TABLE_TRIPS_AND_ITEMS, record);
+    }
+  }
+
   public async getCategories(): Promise<CategoryType[]> {
     return await this.db.getTable(TABLE_CATEGORIES);
   }
