@@ -45,7 +45,11 @@
         "wkładka na palce",
         "sprzęt do naprawy ucha",
         "nitka dentystyczna",
-        "pasta do butów"
+        "pasta do butów",
+        "torebka lotniskowa",
+        "żel pod prysznic",
+        "patyczki do uszu",
+        "łopatka do uszu"
       ]
     },
     {
@@ -72,7 +76,8 @@
         "ładowarka do laptopa",
         "kabel USB",
         "walkie-talkie",
-        "power bank"
+        "power bank",
+        "kindle"
       ]
     },
     {
@@ -100,7 +105,9 @@
         "notes",
         "płaszcz przeciwdeszczowy",
         "piersiówka",
-        "teleskop"
+        "teleskop",
+        "ostrzałka",
+        "lodówka"
       ]
     },
     {
@@ -126,26 +133,39 @@
       ]
     },
     {
+      "name": "Żeglarstwo",
+      "items": [
+        "spodnie żeglarskie",
+        "kurtka nieprzemakalna",
+        "worek wodoodporny",
+        "rękawiczki żeglarskie",
+      ]
+    },
+    {
       "name": "Sport",
       "items": [
         "okularki pływackie",
+        "zatyczki do uszu",
         "dmuchane zabawki",
         "piłka ⚽",
         "buty do biegania",
         "spodenki do biegania",
         "koszulka do biegania",
-        "spodnie żeglarskie",
-        "kurtka nieprzemakalna",
         "stuptuty",
         "kostium kąpielowy",
-        "worek wodoodporny",
         "sup",
-        "wiosło"
+        "wiosło",
+        "maska do nurkowania",
+        "rurka do nurkowania",
+        "kąpielówki",
+        "buty do pływania",
+        "płetwy",
+        "okulary przeciwsłoneczne"
       ]
     },
     {
       "name": "Samochód",
-      "items": ["kamizelka odblaskowa", "lina holownicza", "łańcuchy"]
+      "items": ["kamizelka odblaskowa", "lina holownicza", "łańcuchy", "torba na zakupy"]
     },
     {
       "name": "Apteczka",
@@ -159,12 +179,13 @@
         "śpiewniki",
         "stroik",
         "kostki",
-        "kapodaster"
+        "kapodaster",
+        "lampeczka"
       ]
     },
     {
       "name": "Inne",
-      "items": ["klucze", "jedzenie", "whiskey", "piwo", "ostrzałka"]
+      "items": ["klucze", "jedzenie", "whiskey", "piwo"]
     }
   ]
 }
