@@ -138,7 +138,7 @@
         "spodnie żeglarskie",
         "kurtka nieprzemakalna",
         "worek wodoodporny",
-        "rękawiczki żeglarskie",
+        "rękawiczki żeglarskie"
       ]
     },
     {
@@ -165,7 +165,12 @@
     },
     {
       "name": "Samochód",
-      "items": ["kamizelka odblaskowa", "lina holownicza", "łańcuchy", "torba na zakupy"]
+      "items": [
+        "kamizelka odblaskowa",
+        "lina holownicza",
+        "łańcuchy",
+        "torba na zakupy"
+      ]
     },
     {
       "name": "Apteczka",
