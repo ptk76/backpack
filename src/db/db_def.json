@@ -79,7 +79,8 @@
         "kabel USB",
         "walkie-talkie",
         "power bank",
-        "kindle"
+        "kindle",
+        "słuchawki"
       ]
     },
     {
@@ -109,7 +110,8 @@
         "piersiówka",
         "teleskop",
         "ostrzałka",
-        "lodówka"
+        "lodówka",
+        "czapka saunowa"
       ]
     },
     {
@@ -162,7 +164,8 @@
         "kąpielówki",
         "buty do pływania",
         "płetwy",
-        "okulary przeciwsłoneczne"
+        "okulary przeciwsłoneczne",
+        "nerka do biegania"
       ]
     },
     {
@@ -192,7 +195,7 @@
     },
     {
       "name": "Inne",
-      "items": ["klucze", "jedzenie", "whiskey", "piwo"]
+      "items": ["klucze", "jedzenie", "whiskey", "piwo", "książka"]
     }
   ]
 }
