@@ -9,7 +9,6 @@
   margin: 6px;
   padding: 10px;
   height: fit-content;
-  width: 230px;
 }
 
 .PackingCategory {
@@ -54,8 +53,9 @@
 
 
 .ItemRemove {
-  background-color: red;
-  opacity: 25%;
+  background-color: rgb(121, 121, 121);
+  color: black;
+  /* opacity: 25%; */
 }
 
 .ItemRemoved {

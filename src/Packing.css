@@ -1,6 +1,6 @@
 .container {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
 }
 
 .packing {
@@ -9,7 +9,6 @@
   margin: 6px;
   padding: 10px;
   height: fit-content;
-  width: 230px;
 }
 
 .PackingCategory {
@@ -51,13 +50,3 @@
   background-color: lightgray;
 }
 
-
-
-.ItemRemove {
-  background-color: red;
-  opacity: 25%;
-}
-
-.ItemRemoved {
-  display: none;
-}

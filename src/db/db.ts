@@ -35,7 +35,7 @@ class DataBase {
     return new Promise<void>((resolve, reject) => {
       const dbOpenRequest = window.indexedDB.open(
         DataBase.DATABASE_NAME,
-        DataBase.DATABASE_VER
+        DataBase.DATABASE_VER,
       );
       dbOpenRequest.onerror = (event) => {
         reject(event);
@@ -81,7 +81,7 @@ class DataBase {
 
   public async getRecords(
     table: TABLES,
-    conditionFunction: (item: object) => boolean
+    conditionFunction: (item: object) => boolean,
   ) {
     return new Promise<Array<object>>((resolve, reject) => {
       if (!this.db) {
@@ -242,7 +242,7 @@ class DataBase {
       autoIncrement: true,
     });
     itemsTable.createIndex("category_id", "category_id", { unique: false });
-    itemsTable.createIndex("name", "name", { unique: true });
+    itemsTable.createIndex("name", "name", { unique: false });
   }
 
   private async initDefaults() {
@@ -253,9 +253,8 @@ class DataBase {
       }
       await this.initDefaultCategories();
 
-      const categoriesDB: Array<CategoryType> = await this.getTable(
-        TABLE_CATEGORIES
-      );
+      const categoriesDB: Array<CategoryType> =
+        await this.getTable(TABLE_CATEGORIES);
       const categories = new Map();
 
       categoriesDB.forEach((e) => {
@@ -378,7 +377,7 @@ class DataBase {
 
       const transaction = this.db.transaction(
         [TABLE_TRIPS_AND_ITEMS],
-        "readwrite"
+        "readwrite",
       );
       const storeItems = transaction.objectStore(TABLE_TRIPS_AND_ITEMS);
 

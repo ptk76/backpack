@@ -15,7 +15,7 @@ function Add(props: { onClose: () => void }) {
         {categories.map((cat) => (
           <option key={fakeKey++} value={cat.name} />
         ))}
-      </>
+      </>,
     );
   };
 
@@ -28,11 +28,7 @@ function Add(props: { onClose: () => void }) {
     e.preventDefault();
     const form = e.target as HTMLFormElement;
     const formData = new FormData(form);
-    db.addItem(
-      formData.get("category") as string,
-      formData.get("item") as string,
-      1
-    );
+    db.addItem("Inne", formData.get("item") as string, 1);
     props.onClose();
   };
 
@@ -47,11 +43,6 @@ function Add(props: { onClose: () => void }) {
         </div>
 
         <form className="addform" method="post" onSubmit={handleSubmit}>
-          <div className="combo">
-            <div>Kategoria</div>
-            <input type="text" name="category" list="categorylist" />
-            <datalist id="categorylist">{categories}</datalist>
-          </div>
           <div>Nazwa</div>
           <input type="text" name="item" />
           <button className="addbutton" name="add" type="submit">
