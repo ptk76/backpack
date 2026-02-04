@@ -39,6 +39,7 @@
         "ręcznik",
         "kosmetyki",
         "pilnik i cążki do paznokci",
+        "nożyczki",
         "papier toaletowy",
         "chusteczki",
         "gumka do włosów",
@@ -133,7 +134,12 @@
         "buty narciarskie",
         "kijki",
         "narty",
-        "gogle"
+        "gogle",
+        "karta dolomitiski",
+        "kask narciarski",
+        "czapka pod kask",
+        "rękawice",
+        "komin"
       ]
     },
     {
@@ -142,7 +148,8 @@
         "spodnie żeglarskie",
         "kurtka nieprzemakalna",
         "worek wodoodporny",
-        "rękawiczki żeglarskie"
+        "rękawiczki żeglarskie",
+        "gumowce"
       ]
     },
     {
