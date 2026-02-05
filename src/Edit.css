@@ -23,7 +23,7 @@
 .PackingItems {
   text-align: left;
   color: black;
-  font-size: normal;
+  font-size: larger;
   background-color: lightcyan;
   border-radius: 8px;
   margin: 6px;
@@ -33,7 +33,7 @@
 .edit-items {
   text-align: left;
   color: black;
-  font-size: normal;
+  font-size:larger;
   background-color: lightgreen;
   border-radius: 8px;
   margin: 6px;
@@ -42,7 +42,8 @@
 
 
 .ItemOff {
-  opacity: 5%;
+  background-color: rgb(121, 121, 121);
+  color: black;
 }
 
 .ItemHide {
@@ -55,7 +56,6 @@
 .ItemRemove {
   background-color: rgb(121, 121, 121);
   color: black;
-  /* opacity: 25%; */
 }
 
 .ItemRemoved {

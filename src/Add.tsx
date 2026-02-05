@@ -1,10 +1,11 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import "./Add.css";
 import DataBaseFacade, { DataBaseFacadeContext } from "./db/db_facade";
 
 let fakeKey = 0;
 function Add(props: { onClose: () => void }) {
   const [categories, setCategories] = useState(<></>);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const db = useContext(DataBaseFacadeContext);
 
@@ -23,6 +24,10 @@ function Add(props: { onClose: () => void }) {
     getCategories(db);
     return () => {};
   }, [categories]);
+
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
@@ -43,8 +48,7 @@ function Add(props: { onClose: () => void }) {
         </div>
 
         <form className="addform" method="post" onSubmit={handleSubmit}>
-          <div>Nazwa</div>
-          <input type="text" name="item" />
+          <input type="text" name="item" ref={inputRef} />
           <button className="addbutton" name="add" type="submit">
             Dodaj
           </button>

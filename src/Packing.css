@@ -23,7 +23,7 @@
 .PackingItems {
   text-align: left;
   color: black;
-  font-size: normal;
+  font-size:larger;
   background-color: lightcyan;
   border-radius: 8px;
   margin: 6px;
@@ -33,17 +33,13 @@
 .edit-items {
   text-align: left;
   color: black;
-  font-size: normal;
+  font-size: larger;
   background-color: lightgreen;
   border-radius: 8px;
   margin: 6px;
   padding: 10px;
 }
 
-
-.ItemOff {
-  opacity: 5%;
-}
 
 .ItemHide {
   opacity: 25%;
