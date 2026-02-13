@@ -1,98 +1,39 @@
 import "./Packing.css";
 import { useContext, useEffect, useState } from "react";
 
-import DataBaseFacade, {
-  DataBaseFacadeContext,
-  type ItemCategoryPackedEnabledType,
-  type TripItemType,
-} from "./db/db_facade";
+import DataBaseFacade, { DataBaseFacadeContext } from "./db/db_facade";
+import Category from "./Category";
 
-async function getItemsByCategory(
-  categoryId: number,
-  items: ItemCategoryPackedEnabledType[],
-  onClickPack: (itemId: number) => void
-) {
-  const result = [];
-  for (const item of items) {
-    if (item.category_id === categoryId) {
-      if (!item.enabled) continue;
-      result.push(
-        <div
-          className={!item.packed ? "PackingItems" : "PackingItems ItemOff"}
-          id={"item_" + item.id}
-          key={item.id}
-          onClick={() => onClickPack(item.id)}
-        >
-          {item.name}
-        </div>
-      );
-    }
-  }
-  return result;
-}
-
-async function createPackingList(
-  db: DataBaseFacade,
-  items: ItemCategoryPackedEnabledType[],
-  onClickPack: (itemId: number) => void
-) {
+async function createPackingList(db: DataBaseFacade, editMode: boolean) {
   const categories = await db.getCategories();
   const result = categories.map(async (category) => {
-    const itemByCategory = await getItemsByCategory(
-      category.id,
-      items,
-      onClickPack
-    );
-    if (itemByCategory.length === 0) return <></>;
     return (
-      <>
-        <div className="packing">
-          <div className="PackingCategory" key={category.id}>
-            {category.name}
-          </div>
-          <div>{itemByCategory}</div>
-        </div>
-      </>
+      <Category
+        key={category.id}
+        label={category.name}
+        tripId={1}
+        categoryId={category.id}
+        editMode={editMode}
+      />
     );
   });
 
   return <>{result}</>;
 }
 
-function Packing() {
-  const [itemTable, setItemTable] = useState<ItemCategoryPackedEnabledType[]>(
-    []
-  );
+function Packing(props: { editMode: boolean }) {
   const [packingList, setPackingList] = useState(<></>);
   const db = useContext(DataBaseFacadeContext);
 
-  const onClickPack = async (itemId: number) => {
-    let tripItem: TripItemType = await db.getTripItem(1, itemId);
-    tripItem.packed = !tripItem.packed;
-    await db.setTripItem(tripItem);
-
-    setItemTable(
-      itemTable.map((item) => {
-        if (item.id === itemId) item.packed = !item.packed;
-        return item;
-      })
-    );
-  };
-
   const updatePackingList = async () => {
-    const items = await createPackingList(db, itemTable, onClickPack);
+    const items = await createPackingList(db, props.editMode);
     setPackingList(items);
   };
 
   useEffect(() => {
-    db.selectItemCategoryActiveByTrip(1).then((items) => setItemTable(items));
-    return () => {};
-  }, []);
-
-  useEffect(() => {
     updatePackingList();
     return () => {};
-  }, [itemTable]);
+  }, []);
 
   return (
     <>

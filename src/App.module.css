@@ -26,8 +26,13 @@
   left: 0;
 }
 
-.menu-container {
+.menuContainer {
   display: flex;
+  flex-direction: column;
+  position: fixed;
+  right: 0px;
+  top: 0px;
+  height: 100%;
 }
 
 .menu {
@@ -38,6 +43,7 @@
   padding: 10px;
   cursor: pointer;
   margin-left: auto;
+  width: 48px;
 }
 
 .disabled {
@@ -45,7 +51,12 @@
   cursor: default;
 }
 
-.reset,
-.add {
-  margin-left: 6px;
+.reset {
+  margin-top: auto;
+  margin-bottom: 20px;
+}
+
+.stopScrolling {
+  height: 100%;
+  overflow: hidden;
 }

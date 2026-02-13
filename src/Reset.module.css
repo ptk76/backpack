@@ -1,0 +1,56 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  background: lightgray;
+  border-radius: 8px;
+  padding: 20px;
+  margin: auto;
+  width: 80%;
+}
+
+.header {
+  display: flex;
+}
+
+.title {
+  color: black;
+  margin-right: auto;
+  font-size: larger;
+  font-weight: bold;
+}
+
+.buttons{
+  display: flex;
+}
+
+.yes, .no {
+  color: black;
+  background-color: white;
+  cursor: pointer;
+  padding: 8px;
+  margin-top: 16px;
+  width: 500px;
+  margin-right: auto;
+  margin-left: 50px;
+}
+
+.yes{
+  background-color: gray;
+  margin-left: auto;
+  margin-right: 50px;
+}
+
+.close {
+  color: white;
+  background-color: gray;
+  border-radius: 5px;
+  cursor: pointer;
+  padding: 0px 8px;
+  margin-left: auto;
+}
+
+input{
+  font-size: large;
+  margin-top: 10px;
+    padding: 12px;
+}

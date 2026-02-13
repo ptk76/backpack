@@ -1,0 +1,23 @@
+.container {
+  color: black;
+  font-weight: normal;
+  font-size: larger;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  margin: 10px 0px;
+}
+
+.enabled {
+  background-color: lightcyan;
+}
+.enabledEdit {
+  background-color: lightgreen;
+}
+
+.disabled {
+  background-color: rgb(121, 121, 121);
+}
+.disabledEdit {
+  background-color: rgb(120, 134, 120);
+}

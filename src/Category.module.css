@@ -1,0 +1,39 @@
+.container {
+  display: flex;
+  flex-direction: column;
+
+  background-color: gray;
+  border-radius: 8px;
+  padding: 10px 20px;
+  height: fit-content;
+  text-align: left;
+  color: black;
+  font-weight: bold;
+  font-size: large;
+  border-radius: 8px;
+  margin: 20px 10%;
+}
+
+.topBar {
+  display: flex;
+  cursor: pointer;
+}
+
+.title {
+  margin-left: 0px;
+}
+
+.separator {
+  margin-left: auto;
+  margin-right: 0px;
+
+}
+.counter {
+  margin-right: 0px;
+}
+
+.fold {
+  margin: 5px 10px;
+  width: 20px;
+  height: 20px;
+}
