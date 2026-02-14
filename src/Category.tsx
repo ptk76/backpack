@@ -69,6 +69,11 @@ function Category(props: {
     return () => {};
   }, []);
 
+  useEffect(() => {
+    if (!props.editMode && total === selected) onFold();
+    return () => {};
+  }, [selected]);
+
   return (
     total > 0 && (
       <div className={style.container}>
