@@ -1,23 +1,35 @@
-import style from "./App.module.css";
 import Packing from "./Packing";
 import Add from "./Add";
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import DataBase from "./db/db";
 import imgEdit from "./assets/edit.svg";
 import imgAdd from "./assets/add.svg";
 import imgReset from "./assets/reset.svg";
 import imgReturn from "./assets/return.svg";
+import imgStars from "./assets/stars.svg";
 import Reset from "./Reset";
+import { ThemeContext, ThemeProvider, type ThemeType } from "./Theme";
+import Button from "./Button";
 
 function App() {
+  const { app: style } = useContext(ThemeContext);
   const [stopScroll, setStopScroll] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [showAdd, setShowAdd] = useState(false);
   const [showReset, setShowReset] = useState(false);
   const [refresh, setRefresh] = useState(1);
+  const [theme, setTheme] = useState<ThemeType>("def");
 
   const toggleEdit = () => {
     setEditMode((prev) => !prev);
+  };
+
+  const onToggleTheme = () => {
+    setTheme((prev) => {
+      const newTheme = prev === "def" ? "mila" : "def";
+      localStorage.setItem("theme", newTheme);
+      return newTheme;
+    });
   };
 
   const onCloseAdd = () => {
@@ -45,8 +57,14 @@ function App() {
     }
   };
 
+  useEffect(() => {
+    const theme = localStorage.getItem("theme") as ThemeType;
+    setTheme(theme ? theme : "def");
+    return () => {};
+  }, []);
+
   return (
-    <>
+    <ThemeProvider theme={theme}>
       {showAdd && (
         <div className={style.layer1}>
           <Add onClose={onCloseAdd}></Add>
@@ -59,23 +77,14 @@ function App() {
       )}
       <div className={style.layer0}>
         <div className={style.menuContainer}>
-          {!editMode && (
-            <img className={style.menu} src={imgEdit} onClick={toggleEdit} />
-          )}
+          {!editMode && <Button img={imgEdit} onClick={toggleEdit} />}
           {editMode && (
             <>
-              <img
-                className={style.menu}
-                src={imgReturn}
-                onClick={toggleEdit}
-              />
-              <img src={imgAdd} className={style.menu} onClick={onShowAdd} />
-              <div
-                className={[style.menu, style.reset].join(" ")}
-                onClick={onShowReset}
-              >
-                <img src={imgReset} className={[style.resetButton].join(" ")} />
-                <div className={style.resetLabel}>RESET</div>
+              <Button img={imgReturn} onClick={toggleEdit} />
+              <Button img={imgAdd} onClick={onShowAdd} />
+              <Button img={imgStars} onClick={onToggleTheme} />
+              <div className={style.reset}>
+                <Button onClick={onShowReset} img={imgReset} label="RESET" />
               </div>
             </>
           )}
@@ -85,7 +94,7 @@ function App() {
           {editMode && <Packing editMode={true}></Packing>}
         </div>
       </div>
-    </>
+    </ThemeProvider>
   );
 }
 

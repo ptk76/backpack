@@ -1,0 +1,29 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  background: pink;
+  border-radius: 8px;
+  padding: 20px;
+  margin: auto;
+  width: 80%;
+}
+
+.header {
+  display: flex;
+}
+
+.title {
+  color: black;
+  margin-right: auto;
+  font-size: larger;
+  font-weight: bold;
+}
+.close {
+  color: white;
+  background-color: palevioletred;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-left: auto;
+  width: 32px;
+  height: 32px;
+}

@@ -1,10 +1,11 @@
-import style from "./Category.module.css";
+// import style from "./Category.module.css";
 import { type JSX, useContext, useEffect, useState } from "react";
 import imgFoldUp from "./assets/fold-up.svg";
 import imgFoldDown from "./assets/fold-down.svg";
 
 import { DataBaseFacadeContext } from "./db/db_facade";
 import Item from "./Item";
+import { ThemeContext } from "./Theme";
 
 function Category(props: {
   label: string;
@@ -12,6 +13,7 @@ function Category(props: {
   categoryId: number;
   editMode: boolean;
 }) {
+  const { category: style } = useContext(ThemeContext);
   const db = useContext(DataBaseFacadeContext);
   const [items, setItems] = useState<JSX.Element[]>();
   const [fold, setFold] = useState(false);

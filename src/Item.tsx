@@ -1,7 +1,7 @@
-import style from "./Item.module.css";
 import { useContext, useEffect, useRef, useState } from "react";
 
 import { DataBaseFacadeContext, type TripItemType } from "./db/db_facade";
+import { ThemeContext } from "./Theme";
 
 function Item(props: {
   label: string;
@@ -10,6 +10,7 @@ function Item(props: {
   onClick: (enabled: boolean) => void;
   editMode: boolean;
 }) {
+  const { item: style } = useContext(ThemeContext);
   const itemRef = useRef<TripItemType | null>(null);
   const db = useContext(DataBaseFacadeContext);
   const [show, setShow] = useState(false);

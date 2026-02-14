@@ -1,0 +1,36 @@
+.container {
+  position: relative;
+  background-color: rgb(231, 30, 97);
+  color: black;
+  border-radius: 8px;
+  border: solid 1px black;
+  margin: 8px 4px;
+  padding: 6px;
+  cursor: pointer;
+  margin-left: auto;
+  width: 36px;
+  height: 36px;
+  opacity: 25%;
+}
+
+.reset {
+  position: relative;
+  margin-top: auto;
+  margin-bottom: 20px;
+  color: black;
+  width: 36px;
+}
+
+.icon {
+  margin-left: 2px;
+  margin-top: 2px;
+  width: 32px;
+}
+
+.label {
+  position: absolute;
+  top: 19px;
+  left: 13px;
+  font-size: 7px;
+  font-weight: bold;
+}

@@ -1,0 +1,23 @@
+.container {
+  color: black;
+  font-weight: normal;
+  font-size: larger;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  margin: 10px 0px;
+}
+
+.enabled {
+  background-color: rgb(231, 30, 97);
+}
+.enabledEdit {
+  background-color: palevioletred;
+}
+
+.disabled {
+  background-color: pink;
+}
+.disabledEdit {
+  background-color: pink;
+}

@@ -39,7 +39,7 @@ function Add(props: { onClose: () => void }) {
   };
 
   return (
-    <Popup onClose={() => props.onClose} title="Nowa rzecz">
+    <Popup onClose={props.onClose} title="Nowa rzecz">
       <form className={style.addform} method="post" onSubmit={handleSubmit}>
         <input type="text" name="item" ref={inputRef} />
         <button className={style.addbutton} name="add" type="submit">
