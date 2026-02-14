@@ -37,3 +37,11 @@
   width: 20px;
   height: 20px;
 }
+
+.emptyPack{
+  color: rgb(126, 0, 0);
+}
+
+.fullPack{
+  color: rgb(136, 199, 41);
+}

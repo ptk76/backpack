@@ -47,6 +47,7 @@ function Category(props: {
     }
     setTotal(total);
     setSelected(selected);
+    if (!props.editMode && total === selected) setFold(true);
     setItems(
       items.map((item) => (
         <Item
@@ -75,7 +76,19 @@ function Category(props: {
           {!fold && <img src={imgFoldUp} className={style.fold} />}
           <div className={style.separator} />
           <div className={style.counter}>
-            [{selected}/{total}]
+            [
+            <span
+              className={
+                props.editMode
+                  ? ""
+                  : total === selected
+                    ? style.fullPack
+                    : style.emptyPack
+              }
+            >
+              {selected}
+            </span>
+            /{total}]
           </div>
         </div>
         {!fold && <div>{items}</div>}
