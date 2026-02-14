@@ -2,7 +2,7 @@
 
 Backpack is a static page which helps to prepare for a trip. It lists all items which may be useful to have in a suitcase, also allows to create a custom set of things you may need. This project in available in Polish only. but it's easy to convert to any language. 
 
-A demo: (ptk76.github.io/backpack)[https://ptk76.github.io/backpack]
+A demo: https://ptk76.github.io/backpack
 
 # Building
 
