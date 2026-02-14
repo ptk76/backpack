@@ -19,11 +19,12 @@
   font-weight: bold;
 }
 
-.buttons{
+.buttons {
   display: flex;
 }
 
-.yes, .no {
+.yes,
+.no {
   color: black;
   background-color: white;
   cursor: pointer;
@@ -31,13 +32,13 @@
   margin-top: 16px;
   width: 500px;
   margin-right: auto;
-  margin-left: 50px;
+  margin-left: 20px;
 }
 
-.yes{
+.yes {
   background-color: gray;
   margin-left: auto;
-  margin-right: 50px;
+  margin-right: 20px;
 }
 
 .close {
@@ -45,12 +46,13 @@
   background-color: gray;
   border-radius: 5px;
   cursor: pointer;
-  padding: 0px 8px;
   margin-left: auto;
+  width: 32px;
+  height: 32px;
 }
 
-input{
+input {
   font-size: large;
   margin-top: 10px;
-    padding: 12px;
+  padding: 12px;
 }

@@ -1,6 +1,7 @@
 import { useContext, useEffect, useRef, useState } from "react";
-import "./Add.css";
+import style from "./Add.module.css";
 import DataBaseFacade, { DataBaseFacadeContext } from "./db/db_facade";
+import imgClose from "./assets/close-x.svg";
 
 let fakeKey = 0;
 function Add(props: { onClose: () => void }) {
@@ -39,17 +40,19 @@ function Add(props: { onClose: () => void }) {
 
   return (
     <>
-      <div className="add-container">
-        <div className="header">
-          <div className="title">Nowa rzecz</div>
-          <div className="close" onClick={props.onClose}>
-            x
-          </div>
+      <div className={style.container}>
+        <div className={style.header}>
+          <div className={style.title}>Nowa rzecz</div>
+          <img
+            src={imgClose}
+            className={style.close}
+            onClick={() => props.onClose()}
+          />
         </div>
 
-        <form className="addform" method="post" onSubmit={handleSubmit}>
+        <form className={style.addform} method="post" onSubmit={handleSubmit}>
           <input type="text" name="item" ref={inputRef} />
-          <button className="addbutton" name="add" type="submit">
+          <button className={style.addbutton} name="add" type="submit">
             Dodaj
           </button>
         </form>

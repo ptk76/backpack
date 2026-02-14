@@ -1,4 +1,5 @@
 import style from "./Reset.module.css";
+import imgClose from "./assets/close-x.svg";
 
 function Reset(props: { onClose: (reset: boolean) => void }) {
   return (
@@ -8,9 +9,11 @@ function Reset(props: { onClose: (reset: boolean) => void }) {
           <div className={style.title}>
             Czy przywrócić ustawienia początkowe?
           </div>
-          <div className={style.close} onClick={() => props.onClose(false)}>
-            x
-          </div>
+          <img
+            src={imgClose}
+            className={style.close}
+            onClick={() => props.onClose(false)}
+          />
         </div>
 
         <div className={style.buttons}>

@@ -1,4 +1,4 @@
-import "./Packing.css";
+import style from "./Packing.module.css";
 import { useContext, useEffect, useState } from "react";
 
 import DataBaseFacade, { DataBaseFacadeContext } from "./db/db_facade";
@@ -35,11 +35,7 @@ function Packing(props: { editMode: boolean }) {
     return () => {};
   }, []);
 
-  return (
-    <>
-      <div className="container">{packingList}</div>
-    </>
-  );
+  return <div className={style.container}>{packingList}</div>;
 }
 
 export default Packing;
