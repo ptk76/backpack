@@ -4,6 +4,8 @@ Backpack is a static page which helps to prepare for a trip. It lists all items 
 
 A demo: https://ptk76.github.io/backpack
 
+The page works only locally and uses IndexedDB. No data is transfered or processed on external servers, Github only hosts code of the page and have no access to any data created by the user.
+
 # Building
 
 This is TypeScript + React project, requires npm.
