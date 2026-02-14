@@ -45,6 +45,7 @@
   cursor: pointer;
   margin-left: auto;
   width: 36px;
+  height: 36px;
   opacity: 25%;
 }
 
@@ -54,8 +55,26 @@
 }
 
 .reset {
+  position: relative;
   margin-top: auto;
   margin-bottom: 20px;
+  color: black;
+  font-size: small;
+  width: 36px;
+}
+
+.resetLabel {
+  position: absolute;
+  top: 19px;
+  left: 13px;
+  font-size: 7px;
+  font-weight: bold;
+}
+
+.resetButton {
+  margin-left: 2px;
+  margin-top: 2px;
+  width: 32px;
 }
 
 .stopScrolling {

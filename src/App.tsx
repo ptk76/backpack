@@ -69,14 +69,14 @@ function App() {
                 src={imgReturn}
                 onClick={toggleEdit}
               />
-              {<img src={imgAdd} className={style.menu} onClick={onShowAdd} />}
-              {
-                <img
-                  src={imgReset}
-                  className={[style.menu, style.reset].join(" ")}
-                  onClick={onShowReset}
-                />
-              }
+              <img src={imgAdd} className={style.menu} onClick={onShowAdd} />
+              <div
+                className={[style.menu, style.reset].join(" ")}
+                onClick={onShowReset}
+              >
+                <img src={imgReset} className={[style.resetButton].join(" ")} />
+                <div className={style.resetLabel}>RESET</div>
+              </div>
             </>
           )}
         </div>

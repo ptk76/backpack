@@ -5,7 +5,7 @@ function Reset(props: { onClose: (reset: boolean) => void }) {
   return (
     <Popup
       title="Czy przywrócić ustawienia początkowe?"
-      onClick={() => props.onClose(false)}
+      onClose={() => props.onClose(false)}
     >
       <div className={style.buttons}>
         <button className={style.yes} onClick={() => props.onClose(true)}>
