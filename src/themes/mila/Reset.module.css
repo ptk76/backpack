@@ -1,0 +1,21 @@
+.buttons {
+  display: flex;
+}
+
+.yes,
+.no {
+  color: black;
+  background-color: rgb(231, 30, 97);
+  cursor: pointer;
+  padding: 8px;
+  margin-top: 16px;
+  width: 500px;
+  margin-right: auto;
+  margin-left: 20px;
+}
+
+.yes {
+  background-color: palevioletred;
+  margin-left: auto;
+  margin-right: 20px;
+}

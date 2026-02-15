@@ -1,7 +1,10 @@
+import { useContext } from "react";
 import Popup from "./Popup";
-import style from "./Reset.module.css";
+import { ThemeContext } from "./Theme";
 
 function Reset(props: { onClose: (reset: boolean) => void }) {
+  const { reset: style } = useContext(ThemeContext);
+
   return (
     <Popup
       title="Czy przywrócić ustawienia początkowe?"

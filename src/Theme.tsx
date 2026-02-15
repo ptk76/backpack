@@ -15,6 +15,9 @@ import milaItem from "./themes/mila/Item.module.css";
 import genericPopup from "./themes/generic/Popup.module.css";
 import milaPopup from "./themes/mila/Popup.module.css";
 
+import genericReset from "./themes/generic/Reset.module.css";
+import milaReset from "./themes/mila/Reset.module.css";
+
 const themes = {
   generic: {
     app: genericApp,
@@ -22,6 +25,7 @@ const themes = {
     item: genericItem,
     button: genericButton,
     popup: genericPopup,
+    reset: genericReset,
   },
   mila: {
     app: milaApp,
@@ -29,6 +33,7 @@ const themes = {
     item: milaItem,
     button: milaButton,
     popup: milaPopup,
+    reset: milaReset,
   },
 };
 
